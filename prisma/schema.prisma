@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Cemetery {
+  id           String  @id @default(cuid())
+  name         String
+  municipality String?
+  province     String?
+  address      String?
+
+  latitude  Decimal? @db.Decimal(10, 7)
+  longitude Decimal? @db.Decimal(10, 7)
+
+  graveRecords GraveRecord[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}
+
+model GraveRecord {
+  id String @id @default(cuid())
+
+  cemeteryId String
+  cemetery   Cemetery @relation(fields: [cemeteryId], references: [id], onDelete: Cascade)
+
+  firstNames String
+  lastName   String
+  fullName   String
+
+  dateOfBirth  DateTime?
+  dateOfDeath  DateTime?
+  dateOfBurial DateTime?
+
+  burialType BurialType @default(BURIAL)
+
+  cemeteryBlock String?
+  rowNumber     String?
+  graveNumber   String?
+
+  latitude  Decimal? @db.Decimal(10, 7)
+  longitude Decimal? @db.Decimal(10, 7)
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([firstNames])
+  @@index([lastName])
+  @@index([fullName])
+  @@index([cemeteryId])
+  @@index([cemeteryBlock])
+}
+
+enum BurialType {
+  BURIAL
+  CREMATION
+  ASH_INTERMENT
+  MEMORIAL_ONLY
+}
