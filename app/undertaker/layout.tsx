@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { Building2, ClipboardList, Home } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function UndertakerLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <main className="min-h-svh bg-muted/30 text-foreground">
