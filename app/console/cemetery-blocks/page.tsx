@@ -15,12 +15,17 @@ export default async function ConsoleCemeteryBlocksPage() {
           <Link href="/console">Back to console</Link>
         </Button>
 
-        <div className="mb-8">
-          <p className="text-sm font-medium text-muted-foreground">Console</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight">Cemetery blocks</h1>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            Blocks grouped under cemeteries for grave location and capacity reporting.
-          </p>
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">Console</p>
+            <h1 className="mt-3 text-4xl font-semibold tracking-tight">Cemetery blocks</h1>
+            <p className="mt-4 max-w-2xl text-muted-foreground">
+              Blocks grouped under cemeteries for grave location and capacity reporting.
+            </p>
+          </div>
+          <Button asChild>
+            <Link href="/console/cemetery-blocks/new">New block</Link>
+          </Button>
         </div>
 
         <div className="overflow-hidden rounded-[1.5rem] border bg-card shadow-sm">
