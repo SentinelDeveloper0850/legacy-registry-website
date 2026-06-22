@@ -5,6 +5,15 @@ import { getAdminDashboardStats } from "@/lib/admin-data"
 
 export const dynamic = "force-dynamic"
 
+const cardLinks: Record<string, string> = {
+  Undertakers: "/console/undertakers",
+  Users: "/console/users",
+  Cemeteries: "/console/cemeteries",
+  Blocks: "/console/cemetery-blocks",
+  "Register entries": "/undertaker/mortuary-register",
+  "Published records": "/search",
+}
+
 export default async function ConsolePage() {
   const stats = await getAdminDashboardStats()
 
@@ -26,10 +35,17 @@ export default async function ConsolePage() {
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {stats.map((stat) => (
-            <article key={stat.label} className="rounded-[1.5rem] border bg-card p-5 shadow-sm">
+            <Link
+              key={stat.label}
+              href={cardLinks[stat.label] ?? "/console"}
+              className="group rounded-[1.5rem] border bg-card p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-3 focus:ring-ring/20"
+            >
               <p className="text-3xl font-semibold tracking-tight">{stat.value}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{stat.label}</p>
-            </article>
+              <div className="mt-1 flex items-center justify-between gap-3 text-sm text-muted-foreground">
+                <span>{stat.label}</span>
+                <span className="text-xs opacity-0 transition group-hover:opacity-100">Open</span>
+              </div>
+            </Link>
           ))}
         </div>
       </div>

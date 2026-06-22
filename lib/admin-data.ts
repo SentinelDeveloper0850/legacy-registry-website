@@ -35,3 +35,40 @@ export async function getUndertakerRows() {
     orderBy: { name: "asc" },
   })
 }
+
+export async function getUserRows() {
+  return prisma.user.findMany({
+    include: { undertaker: true },
+    orderBy: { name: "asc" },
+  })
+}
+
+export async function getCemeteryRows() {
+  return prisma.cemetery.findMany({
+    include: {
+      _count: {
+        select: {
+          blocks: true,
+          graveRecords: true,
+          mortuaryRegisterEntries: true,
+        },
+      },
+    },
+    orderBy: { name: "asc" },
+  })
+}
+
+export async function getCemeteryBlockRows() {
+  return prisma.cemeteryBlock.findMany({
+    include: {
+      cemetery: true,
+      _count: {
+        select: {
+          graveRecords: true,
+          mortuaryRegisterEntries: true,
+        },
+      },
+    },
+    orderBy: [{ cemetery: { name: "asc" } }, { name: "asc" }],
+  })
+}
