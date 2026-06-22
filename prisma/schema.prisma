@@ -7,6 +7,46 @@ datasource db {
   provider = "postgresql"
 }
 
+model Undertaker {
+  id String @id @default(cuid())
+
+  name         String
+  tradingName  String?
+  branchName   String?
+  contactEmail String?
+  contactPhone String?
+
+  users                  User[]
+  mortuaryRegisterEntries MortuaryRegisterEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([tradingName])
+}
+
+model User {
+  id String @id @default(cuid())
+
+  undertakerId String
+  undertaker   Undertaker @relation(fields: [undertakerId], references: [id], onDelete: Cascade)
+
+  name     String
+  email    String @unique
+  role     UserRole @default(UNDERTAKER_USER)
+  isActive Boolean  @default(true)
+
+  mortuaryRegisterEntriesCreated MortuaryRegisterEntry[] @relation("MortuaryRegisterEntryCreatedBy")
+  mortuaryRegisterEntriesUpdated MortuaryRegisterEntry[] @relation("MortuaryRegisterEntryUpdatedBy")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([undertakerId])
+  @@index([role])
+}
+
 model Cemetery {
   id           String  @id @default(cuid())
   name         String
@@ -19,6 +59,7 @@ model Cemetery {
 
   blocks       CemeteryBlock[]
   graveRecords GraveRecord[]
+  mortuaryRegisterEntries MortuaryRegisterEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -39,6 +80,7 @@ model CemeteryBlock {
   capacity    Int?
 
   graveRecords GraveRecord[]
+  mortuaryRegisterEntries MortuaryRegisterEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -85,6 +127,64 @@ model GraveRecord {
   @@index([cemeteryBlockId])
   @@index([dateOfBurial])
   @@index([burialType])
+}
+
+model MortuaryRegisterEntry {
+  id String @id @default(cuid())
+
+  undertakerId String
+  undertaker   Undertaker @relation(fields: [undertakerId], references: [id], onDelete: Cascade)
+
+  createdByUserId String
+  createdByUser   User @relation("MortuaryRegisterEntryCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  updatedByUserId String?
+  updatedByUser   User? @relation("MortuaryRegisterEntryUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  bodyNumber String
+
+  firstNames String
+  lastName   String
+  fullName   String
+  idNumber   String?
+
+  dateReceivedAtMortuary DateTime?
+  dateReleasedFromMortuary DateTime?
+  timeReleasedFromMortuary String?
+
+  driverName String?
+  coffinType String?
+
+  cemeteryId String?
+  cemetery   Cemetery? @relation(fields: [cemeteryId], references: [id], onDelete: SetNull)
+
+  cemeteryBlockId String?
+  cemeteryBlock   CemeteryBlock? @relation(fields: [cemeteryBlockId], references: [id], onDelete: SetNull)
+
+  graveNumber String?
+
+  publishToRegistry Boolean @default(false)
+  publishedAt       DateTime?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([undertakerId, bodyNumber])
+  @@index([undertakerId])
+  @@index([createdByUserId])
+  @@index([cemeteryId])
+  @@index([cemeteryBlockId])
+  @@index([fullName])
+  @@index([idNumber])
+  @@index([publishToRegistry])
+}
+
+enum UserRole {
+  UNDERTAKER_ADMIN
+  UNDERTAKER_USER
+  REGISTRY_ADMIN
 }
 
 enum BurialType {
