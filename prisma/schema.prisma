@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
@@ -22,11 +17,34 @@ model Cemetery {
   latitude  Decimal? @db.Decimal(10, 7)
   longitude Decimal? @db.Decimal(10, 7)
 
+  blocks       CemeteryBlock[]
   graveRecords GraveRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([name])
+  @@index([municipality])
+  @@index([province])
+}
+
+model CemeteryBlock {
+  id String @id @default(cuid())
+
+  cemeteryId String
+  cemetery   Cemetery @relation(fields: [cemeteryId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+  capacity    Int?
+
+  graveRecords GraveRecord[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cemeteryId, name])
+  @@index([cemeteryId])
   @@index([name])
 }
 
@@ -35,6 +53,9 @@ model GraveRecord {
 
   cemeteryId String
   cemetery   Cemetery @relation(fields: [cemeteryId], references: [id], onDelete: Cascade)
+
+  cemeteryBlockId String?
+  cemeteryBlock   CemeteryBlock? @relation(fields: [cemeteryBlockId], references: [id], onDelete: SetNull)
 
   firstNames String
   lastName   String
@@ -46,9 +67,8 @@ model GraveRecord {
 
   burialType BurialType @default(BURIAL)
 
-  cemeteryBlock String?
-  rowNumber     String?
-  graveNumber   String?
+  rowNumber   String?
+  graveNumber String?
 
   latitude  Decimal? @db.Decimal(10, 7)
   longitude Decimal? @db.Decimal(10, 7)
@@ -62,7 +82,9 @@ model GraveRecord {
   @@index([lastName])
   @@index([fullName])
   @@index([cemeteryId])
-  @@index([cemeteryBlock])
+  @@index([cemeteryBlockId])
+  @@index([dateOfBurial])
+  @@index([burialType])
 }
 
 enum BurialType {
