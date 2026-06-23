@@ -1,7 +1,7 @@
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
-import { createRegisterEntry } from "../actions"
+import { saveWorkspaceEntry } from "../workspace-actions"
 
 export default function NewRegisterEntryPage() {
   return (
@@ -18,7 +18,7 @@ export default function NewRegisterEntryPage() {
           </p>
         </div>
 
-        <form action={createRegisterEntry} className="grid gap-6 rounded-[1.5rem] border bg-card p-6 shadow-sm">
+        <form action={saveWorkspaceEntry} className="grid gap-6 rounded-[1.5rem] border bg-card p-6 shadow-sm">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Reference number" name="reference" placeholder="SDK 560" required />
             <Field label="ID number" name="idNumber" placeholder="0000000000000" />
