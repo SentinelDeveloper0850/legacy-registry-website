@@ -1,19 +1,28 @@
-"use client"
-
-import { useRouter, useSearchParams } from "next/navigation"
 import { Building2, LockKeyhole } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { prisma } from "@/lib/prisma"
+import { chooseWorkspaceUser } from "./actions"
 
-export default function UndertakerLoginPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const redirectTo = searchParams.get("redirectTo") || "/undertaker"
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
 
-  function handleDemoLogin() {
-    window.localStorage.setItem("legacy-registry-undertaker-auth", "true")
-    router.push(redirectTo)
-  }
+function getParam(params: Record<string, string | string[] | undefined>, key: string) {
+  const value = params[key]
+  return Array.isArray(value) ? value[0] : value
+}
+
+export const dynamic = "force-dynamic"
+
+export default async function UndertakerLoginPage({ searchParams }: PageProps) {
+  const params = await searchParams
+  const redirectTo = getParam(params, "redirectTo") || "/undertaker"
+  const users = await prisma.user.findMany({
+    where: { isActive: true },
+    include: { undertaker: true },
+    orderBy: { name: "asc" },
+  })
 
   return (
     <main className="flex min-h-svh items-center justify-center bg-muted/30 px-6 py-12">
@@ -34,16 +43,36 @@ export default function UndertakerLoginPage() {
           </div>
           <h1 className="text-3xl font-semibold tracking-tight">Sign in</h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Demo access for managing an undertaker mortuary register before publishing cleaned burial records to the public registry.
+            Select a workspace user for this POC. Register entries will be scoped to that user’s undertaker.
           </p>
         </div>
 
-        <Button type="button" size="lg" className="w-full" onClick={handleDemoLogin}>
-          Continue as SDK Head Office
-        </Button>
+        <form action={chooseWorkspaceUser} className="grid gap-4">
+          <input type="hidden" name="redirectTo" value={redirectTo} />
+          <div className="grid gap-2">
+            <label htmlFor="userId" className="text-sm font-medium">User</label>
+            <select
+              id="userId"
+              name="userId"
+              required
+              className="h-11 rounded-xl border bg-background px-3 text-sm outline-none transition focus:border-ring focus:ring-3 focus:ring-ring/20"
+            >
+              <option value="">Select user</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} — {user.undertaker.tradingName ?? user.undertaker.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <Button type="submit" size="lg" className="w-full">
+            Continue to workspace
+          </Button>
+        </form>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          POC-only authentication. Production will use proper organisation users and roles.
+          POC-only login. Production will use secure credentials and role-based access.
         </p>
       </section>
     </main>
