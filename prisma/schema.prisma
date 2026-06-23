@@ -147,6 +147,7 @@ model MortuaryRegisterEntry {
   lastName   String
   fullName   String
   idNumber   String?
+  alternateIdNumber String?
 
   dateReceivedAtMortuary DateTime?
   dateReleasedFromMortuary DateTime?
@@ -185,6 +186,7 @@ model MortuaryRegisterEntry {
   @@index([cemeteryBlockId])
   @@index([fullName])
   @@index([idNumber])
+  @@index([alternateIdNumber])
   @@index([publishToRegistry])
 }
 
