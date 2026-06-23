@@ -3,6 +3,10 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getDemoRegisterRows } from "@/lib/demo-workspace"
 
+function identifier(entry: any) {
+  return entry.idNumber || entry.alternateIdNumber || "Not set"
+}
+
 export default async function RegisterPage() {
   const entries = await getDemoRegisterRows()
 
@@ -36,7 +40,7 @@ export default async function RegisterPage() {
               </div>
 
               <dl className="grid gap-3 text-sm">
-                <Detail label="ID" value={entry.idNumber ?? "Not set"} />
+                <Detail label="ID / Passport" value={identifier(entry)} />
                 <Detail label="Cemetery" value={entry.cemetery?.name ?? "Not set"} />
                 <div className="grid grid-cols-2 gap-3">
                   <Detail label="Block" value={entry.cemeteryBlock?.name ?? "Not set"} />
@@ -61,7 +65,7 @@ export default async function RegisterPage() {
           <div className="grid grid-cols-[0.8fr_1.2fr_1fr_1fr_0.8fr_0.7fr_0.7fr] gap-4 border-b bg-muted/40 px-5 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <span>Ref</span>
             <span>Name</span>
-            <span>ID</span>
+            <span>ID / Passport</span>
             <span>Cemetery</span>
             <span>Block</span>
             <span>Grave</span>
@@ -72,7 +76,7 @@ export default async function RegisterPage() {
             <div key={entry.id} className="grid grid-cols-[0.8fr_1.2fr_1fr_1fr_0.8fr_0.7fr_0.7fr] gap-4 border-b px-5 py-4 text-sm last:border-b-0">
               <span className="font-medium">{entry.bodyNumber}</span>
               <span>{entry.fullName}</span>
-              <span className="text-muted-foreground">{entry.idNumber ?? "Not set"}</span>
+              <span className="text-muted-foreground">{identifier(entry)}</span>
               <span>{entry.cemetery?.name ?? "Not set"}</span>
               <span>{entry.cemeteryBlock?.name ?? "Not set"}</span>
               <span>{entry.graveNumber ?? "Not set"}</span>
