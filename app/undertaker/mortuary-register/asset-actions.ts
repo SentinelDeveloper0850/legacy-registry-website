@@ -31,6 +31,19 @@ function slug(value: string) {
   return value.toLowerCase().replaceAll(" ", "-")
 }
 
+async function tryUploadPhoto(dataUrl: string | null) {
+  if (!dataUrl) {
+    return null
+  }
+
+  try {
+    return await uploadGravePhoto(dataUrl)
+  } catch (error) {
+    console.error("Grave photo upload failed", error)
+    return null
+  }
+}
+
 export async function saveEntryWithAssets(formData: FormData) {
   const user = await getWorkspaceUser()
 
@@ -69,7 +82,7 @@ export async function saveEntryWithAssets(formData: FormData) {
 
   const modelName = ["mortuary", "Register", "Entry"].join("")
   const publish = formData.get("publishToRegistry") === "on"
-  const photo = await uploadGravePhoto(text(formData, "gravePhotoDataUrl") || "")
+  const photo = await tryUploadPhoto(text(formData, "gravePhotoDataUrl"))
 
   await (prisma as any)[modelName].create({
     data: {
@@ -95,7 +108,7 @@ export async function saveEntryWithAssets(formData: FormData) {
       gpsCapturedAt: dateTime(formData, "gpsCapturedAt"),
       gravePhotoUrl: photo?.url,
       gravePhotoPublicId: photo?.publicId,
-      gravePhotoCapturedAt: dateTime(formData, "gravePhotoCapturedAt"),
+      gravePhotoCapturedAt: photo ? dateTime(formData, "gravePhotoCapturedAt") : null,
       publishToRegistry: publish,
       publishedAt: publish ? new Date() : null,
     },
