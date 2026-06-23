@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { GpsCapture } from "@/components/gps-capture"
 import { GravePhotoCapture } from "@/components/grave-photo-capture"
 import { getWorkspaceRegisterEntry } from "@/lib/demo-workspace"
-import { updateWorkspaceEntry } from "./actions"
+import { saveEntryUpdate } from "./update-assets"
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -21,7 +21,7 @@ export default async function EditRegisterEntryPage({ params }: PageProps) {
     notFound()
   }
 
-  const updateAction = updateWorkspaceEntry.bind(null, entry.id)
+  const updateAction = saveEntryUpdate.bind(null, entry.id)
 
   return (
     <section className="px-5 py-8 sm:px-8 sm:py-10 lg:px-10">
