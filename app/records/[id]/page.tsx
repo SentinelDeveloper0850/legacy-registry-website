@@ -1,10 +1,16 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, CalendarDays, MapPin, ShieldCheck } from "lucide-react"
+import { ArrowLeft, CalendarDays, MapPin, Navigation, ShieldCheck } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { formatLocation, formatPublicDate, getPublicRegistryRecord } from "@/lib/public-registry"
+import {
+  formatAccuracy,
+  formatLocation,
+  formatPublicDate,
+  getPublicRegistryRecord,
+  mapsLink,
+} from "@/lib/public-registry"
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -19,6 +25,8 @@ export default async function PublicRecordPage({ params }: PageProps) {
   if (!record) {
     notFound()
   }
+
+  const navigateHref = mapsLink(record)
 
   return (
     <main className="min-h-svh bg-background text-foreground">
@@ -60,6 +68,7 @@ export default async function PublicRecordPage({ params }: PageProps) {
                 rows={[
                   ["Cemetery", record.cemetery?.name ?? "Not captured"],
                   ["Location", formatLocation(record)],
+                  ["GPS accuracy", formatAccuracy(record)],
                   ["Municipality", record.cemetery?.municipality ?? "Not captured"],
                   ["Province", record.cemetery?.province ?? "Not captured"],
                 ]}
@@ -67,7 +76,19 @@ export default async function PublicRecordPage({ params }: PageProps) {
             </div>
 
             <div className="mt-6 rounded-2xl border bg-muted/30 p-4 text-sm text-muted-foreground">
-              Source: {record.undertaker?.tradingName ?? record.undertaker?.name ?? "Undertaker record"}. Internal mortuary workflow fields are not displayed publicly.
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                <p>
+                  Source: {record.undertaker?.tradingName ?? record.undertaker?.name ?? "Undertaker record"}. Internal mortuary workflow fields are not displayed publicly.
+                </p>
+                {navigateHref ? (
+                  <Button asChild>
+                    <a href={navigateHref} target="_blank" rel="noreferrer">
+                      <Navigation className="size-4" aria-hidden="true" />
+                      Navigate to grave
+                    </a>
+                  </Button>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
