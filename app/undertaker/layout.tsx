@@ -1,24 +1,26 @@
 import Link from "next/link"
 import { Building2, ClipboardList, Home } from "lucide-react"
 
+import { UndertakerMobileMenu } from "@/components/undertaker-mobile-menu"
+
 export const dynamic = "force-dynamic"
 
 export default function UndertakerLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <main className="min-h-svh bg-muted/30 text-foreground">
-      <div className="border-b bg-card">
+      <div className="relative border-b bg-card">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 sm:px-8 lg:px-10">
-          <Link href="/undertaker" className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-2xl border bg-background">
+          <Link href="/undertaker" className="flex min-w-0 items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl border bg-background">
               <Building2 className="size-5" aria-hidden="true" />
             </div>
-            <div>
-              <p className="text-sm font-semibold">SDK Head Office</p>
-              <p className="text-xs text-muted-foreground">Demo undertaker workspace</p>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">SDK Head Office</p>
+              <p className="truncate text-xs text-muted-foreground">Demo undertaker workspace</p>
             </div>
           </Link>
 
-          <nav className="flex items-center gap-2 text-sm">
+          <nav className="hidden items-center gap-2 text-sm sm:flex">
             <Link href="/undertaker" className="inline-flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-muted">
               <Home className="size-4" aria-hidden="true" />
               Dashboard
@@ -28,6 +30,8 @@ export default function UndertakerLayout({ children }: Readonly<{ children: Reac
               Register
             </Link>
           </nav>
+
+          <UndertakerMobileMenu />
         </div>
       </div>
 
