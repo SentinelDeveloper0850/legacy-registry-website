@@ -90,6 +90,8 @@ export async function saveWorkspaceEntry(formData: FormData) {
       graveLongitude: decimal(formData, "graveLongitude"),
       gpsAccuracy: decimal(formData, "gpsAccuracy"),
       gpsCapturedAt: dateTime(formData, "gpsCapturedAt"),
+      gravePhotoDataUrl: text(formData, "gravePhotoDataUrl"),
+      gravePhotoCapturedAt: dateTime(formData, "gravePhotoCapturedAt"),
       publishToRegistry: publish,
       publishedAt: publish ? new Date() : null,
     },
