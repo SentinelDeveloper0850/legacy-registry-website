@@ -162,6 +162,10 @@ model MortuaryRegisterEntry {
   cemeteryBlock   CemeteryBlock? @relation(fields: [cemeteryBlockId], references: [id], onDelete: SetNull)
 
   graveNumber String?
+  graveLatitude  Decimal? @db.Decimal(10, 7)
+  graveLongitude Decimal? @db.Decimal(10, 7)
+  gpsAccuracy    Decimal? @db.Decimal(10, 2)
+  gpsCapturedAt  DateTime?
 
   publishToRegistry Boolean @default(false)
   publishedAt       DateTime?
