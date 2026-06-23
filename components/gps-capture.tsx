@@ -5,7 +5,7 @@ import { Crosshair, Loader2, MapPin, ShieldCheck, TriangleAlert } from "lucide-r
 
 import { Button } from "@/components/ui/button"
 
-const targetAccuracy = 1
+const targetAccuracy = 5
 
 type CaptureState = "idle" | "watching" | "accepted" | "unsupported" | "error"
 
@@ -75,7 +75,7 @@ export function GpsCapture() {
         if (reading.accuracy <= targetAccuracy) {
           setAccepted(reading)
           setState("accepted")
-          setMessage("GPS location accepted. This reading meets the 1m accuracy requirement.")
+          setMessage("GPS location accepted. This reading meets the 5m accuracy requirement.")
           stopWatching()
         }
       },
@@ -101,7 +101,7 @@ export function GpsCapture() {
             <h3>GPS grave location</h3>
           </div>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Capture coordinates while standing at the grave. The record will only save coordinates once the GPS reading is ±1m or better.
+            Capture coordinates while standing at the grave. The record will only save coordinates once the GPS reading is ±5m or better.
           </p>
         </div>
         <Button type="button" onClick={startCapture} disabled={state === "watching"}>
