@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, CalendarDays, MapPin, Navigation, ShieldCheck } from "lucide-react"
+import { ArrowLeft, CalendarDays, Camera, MapPin, Navigation, ShieldCheck } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -74,6 +74,20 @@ export default async function PublicRecordPage({ params }: PageProps) {
                 ]}
               />
             </div>
+
+            {record.gravePhotoDataUrl ? (
+              <section className="mt-6 overflow-hidden rounded-2xl border bg-background">
+                <div className="flex items-center gap-2 border-b bg-muted/30 px-4 py-3 font-semibold tracking-tight">
+                  <Camera className="size-5" aria-hidden="true" />
+                  <h2>Grave photo</h2>
+                </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={record.gravePhotoDataUrl} alt={`Grave photo for ${record.fullName}`} className="max-h-[32rem] w-full object-cover" />
+                <p className="px-4 py-3 text-sm text-muted-foreground">
+                  Use this photo to visually confirm the exact grave once navigation brings you nearby.
+                </p>
+              </section>
+            ) : null}
 
             <div className="mt-6 rounded-2xl border bg-muted/30 p-4 text-sm text-muted-foreground">
               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
