@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, CalendarDays, MapPin, ShieldCheck } from "lucide-react"
@@ -75,7 +76,7 @@ export default async function PublicRecordPage({ params }: PageProps) {
   )
 }
 
-function InfoCard({ icon, title, rows }: { icon: React.ReactNode; title: string; rows: [string, string][] }) {
+function InfoCard({ icon, title, rows }: { icon: ReactNode; title: string; rows: [string, string][] }) {
   return (
     <section className="rounded-2xl border bg-background p-5">
       <div className="mb-4 flex items-center gap-2 font-semibold tracking-tight">
