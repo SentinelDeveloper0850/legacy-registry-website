@@ -15,12 +15,13 @@ type PhotoState = {
 
 type UploadState = "idle" | "processing" | "uploading" | "uploaded" | "failed"
 
-type SignatureResponse = {
-  apiKey: string
-  cloudName: string
-  folder: string
-  signature: string
-  timestamp: number
+type UploadResponse = {
+  success: boolean
+  message?: string
+  data?: {
+    url: string
+    publicId: string
+  }
 }
 
 const maxImageSize = 1280
@@ -66,26 +67,12 @@ async function compressImage(file: File) {
   return { dataUrl, blob }
 }
 
-async function getSignature() {
-  const response = await fetch("/api/cloudinary/sign", { method: "POST" })
-
-  if (!response.ok) {
-    throw new Error("Could not prepare Cloudinary upload")
-  }
-
-  return response.json() as Promise<SignatureResponse>
-}
-
-function uploadToCloudinary(blob: Blob, signature: SignatureResponse, onProgress: (progress: number) => void) {
-  return new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
+function uploadToServer(blob: Blob, onProgress: (progress: number) => void) {
+  return new Promise<UploadResponse>((resolve, reject) => {
     const xhr = new XMLHttpRequest()
     const data = new FormData()
 
     data.append("file", blob, "grave-photo.jpg")
-    data.append("api_key", signature.apiKey)
-    data.append("timestamp", String(signature.timestamp))
-    data.append("signature", signature.signature)
-    data.append("folder", signature.folder)
 
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
@@ -94,15 +81,17 @@ function uploadToCloudinary(blob: Blob, signature: SignatureResponse, onProgress
     }
 
     xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve(JSON.parse(xhr.responseText))
+      const response = JSON.parse(xhr.responseText || "{}")
+
+      if (xhr.status >= 200 && xhr.status < 300 && response.success) {
+        resolve(response)
       } else {
-        reject(new Error("Cloudinary upload failed"))
+        reject(new Error(response.message || "Photo upload failed"))
       }
     }
 
-    xhr.onerror = () => reject(new Error("Cloudinary upload failed"))
-    xhr.open("POST", `https://api.cloudinary.com/v1_1/${signature.cloudName}/image/upload`)
+    xhr.onerror = () => reject(new Error("Photo upload failed"))
+    xhr.open("POST", "/api/upload/grave-photo")
     xhr.send(data)
   })
 }
@@ -140,22 +129,21 @@ export function GravePhotoCapture() {
       })
 
       setUploadState("uploading")
-      const signature = await getSignature()
-      const upload = await uploadToCloudinary(blob, signature, setProgress)
+      const upload = await uploadToServer(blob, setProgress)
 
       setPhoto({
         previewUrl: dataUrl,
         capturedAt,
         sizeKb: Math.round(blob.size / 1024),
-        cloudinaryUrl: upload.secure_url,
-        publicId: upload.public_id,
+        cloudinaryUrl: upload.data?.url,
+        publicId: upload.data?.publicId,
       })
       setProgress(100)
       setUploadState("uploaded")
     } catch (uploadError) {
       console.error(uploadError)
       setUploadState("failed")
-      setError("Photo upload failed. Please retry, or save without a photo and add it later.")
+      setError(uploadError instanceof Error ? uploadError.message : "Photo upload failed")
     }
   }
 
