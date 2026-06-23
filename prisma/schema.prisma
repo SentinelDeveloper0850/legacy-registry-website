@@ -166,7 +166,8 @@ model MortuaryRegisterEntry {
   graveLongitude Decimal? @db.Decimal(10, 7)
   gpsAccuracy    Decimal? @db.Decimal(10, 2)
   gpsCapturedAt  DateTime?
-  gravePhotoDataUrl String?
+  gravePhotoUrl String?
+  gravePhotoPublicId String?
   gravePhotoCapturedAt DateTime?
 
   publishToRegistry Boolean @default(false)
