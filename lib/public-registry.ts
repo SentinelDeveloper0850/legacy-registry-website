@@ -81,7 +81,7 @@ export function formatLocation(record: any) {
 }
 
 export function hasAcceptedGps(record: any) {
-  return Boolean(record.graveLatitude && record.graveLongitude && Number(record.gpsAccuracy) <= 1)
+  return Boolean(record.graveLatitude && record.graveLongitude && Number(record.gpsAccuracy) <= 5)
 }
 
 export function mapsLink(record: any) {
