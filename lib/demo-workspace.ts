@@ -1,12 +1,8 @@
+import { getWorkspaceUser } from "@/lib/workspace-context"
 import { prisma } from "@/lib/prisma"
 
-const demoUserEmail = "demo@legacyregistry.local"
-
 export async function getDemoRegisterRows() {
-  const user = await prisma.user.findUnique({
-    where: { email: demoUserEmail },
-    select: { undertakerId: true },
-  })
+  const user = await getWorkspaceUser()
 
   if (!user) {
     return []
