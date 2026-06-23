@@ -47,7 +47,7 @@ export async function searchPublicRegistry(filters: PublicRegistryFilters) {
 }
 
 export async function getPublicRegistryRecord(id: string) {
-  return (prisma as any)[modelName].findFirst({
+  const record = await (prisma as any)[modelName].findFirst({
     where: {
       id,
       publishToRegistry: true,
@@ -58,6 +58,15 @@ export async function getPublicRegistryRecord(id: string) {
       cemeteryBlock: true,
     },
   })
+
+  if (!record) {
+    return null
+  }
+
+  return {
+    ...record,
+    gravePhotoDataUrl: record.gravePhotoUrl,
+  }
 }
 
 export function formatPublicDate(value?: Date | string | null) {
