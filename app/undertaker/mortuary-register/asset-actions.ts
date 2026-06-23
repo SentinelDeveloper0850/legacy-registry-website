@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
-import { uploadGravePhoto } from "@/lib/cloudinary"
 import { prisma } from "@/lib/prisma"
 import { getWorkspaceUser } from "@/lib/workspace-context"
 
@@ -29,19 +28,6 @@ function dateTime(formData: FormData, key: string) {
 
 function slug(value: string) {
   return value.toLowerCase().replaceAll(" ", "-")
-}
-
-async function tryUploadPhoto(dataUrl: string | null) {
-  if (!dataUrl) {
-    return null
-  }
-
-  try {
-    return await uploadGravePhoto(dataUrl)
-  } catch (error) {
-    console.error("Grave photo upload failed", error)
-    return null
-  }
 }
 
 export async function saveEntryWithAssets(formData: FormData) {
@@ -82,7 +68,8 @@ export async function saveEntryWithAssets(formData: FormData) {
 
   const modelName = ["mortuary", "Register", "Entry"].join("")
   const publish = formData.get("publishToRegistry") === "on"
-  const photo = await tryUploadPhoto(text(formData, "gravePhotoDataUrl"))
+  const gravePhotoUrl = text(formData, "gravePhotoUrl")
+  const gravePhotoPublicId = text(formData, "gravePhotoPublicId")
 
   await (prisma as any)[modelName].create({
     data: {
@@ -106,9 +93,9 @@ export async function saveEntryWithAssets(formData: FormData) {
       graveLongitude: decimal(formData, "graveLongitude"),
       gpsAccuracy: decimal(formData, "gpsAccuracy"),
       gpsCapturedAt: dateTime(formData, "gpsCapturedAt"),
-      gravePhotoUrl: photo?.url,
-      gravePhotoPublicId: photo?.publicId,
-      gravePhotoCapturedAt: photo ? dateTime(formData, "gravePhotoCapturedAt") : null,
+      gravePhotoUrl,
+      gravePhotoPublicId,
+      gravePhotoCapturedAt: gravePhotoUrl ? dateTime(formData, "gravePhotoCapturedAt") : null,
       publishToRegistry: publish,
       publishedAt: publish ? new Date() : null,
     },
