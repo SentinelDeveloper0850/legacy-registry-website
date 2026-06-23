@@ -2,6 +2,7 @@ import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { GpsCapture } from "@/components/gps-capture"
+import { GravePhotoCapture } from "@/components/grave-photo-capture"
 import { saveWorkspaceEntry } from "../workspace-actions"
 
 export default function NewRegisterEntryPage() {
@@ -48,8 +49,9 @@ export default function NewRegisterEntryPage() {
               <Field label="Block" name="block" placeholder="Block 42B" />
               <Field label="Grave number" name="graveNumber" placeholder="111" />
             </div>
-            <div className="mt-4">
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
               <GpsCapture />
+              <GravePhotoCapture />
             </div>
           </div>
 
