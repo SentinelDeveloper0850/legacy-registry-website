@@ -23,7 +23,8 @@ export default function NewRegisterEntryPage() {
         <form action={saveEntryWithAssets} className="grid gap-6 rounded-[1.5rem] border bg-card p-6 shadow-sm">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Reference number" name="reference" placeholder="SDK 560" required />
-            <Field label="ID number" name="idNumber" placeholder="0000000000000" />
+            <Field label="SA ID number" name="idNumber" placeholder="0000000000000" />
+            <Field label="Passport / foreign ID" name="alternateIdNumber" placeholder="A12345678" />
             <Field label="First names" name="firstNames" placeholder="Nomsa" required />
             <Field label="Last name" name="lastName" placeholder="Dlamini" required />
           </div>

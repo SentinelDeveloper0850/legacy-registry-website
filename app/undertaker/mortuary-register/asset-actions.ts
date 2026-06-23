@@ -80,6 +80,7 @@ export async function saveEntryWithAssets(formData: FormData) {
       lastName,
       fullName,
       idNumber: text(formData, "idNumber"),
+      alternateIdNumber: text(formData, "alternateIdNumber"),
       dateReceivedAtMortuary: date(formData, "dateReceived"),
       dateReleasedFromMortuary: date(formData, "dateReleased"),
       timeReleasedFromMortuary: text(formData, "timeReleased"),
