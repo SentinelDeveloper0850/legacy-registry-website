@@ -15,12 +15,17 @@ export default async function ConsoleUndertakersPage() {
           <Link href="/console">Back to console</Link>
         </Button>
 
-        <div className="mb-8">
-          <p className="text-sm font-medium text-muted-foreground">Console</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight">Undertakers</h1>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            Organisations currently configured in Legacy Registry.
-          </p>
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">Console</p>
+            <h1 className="mt-3 text-4xl font-semibold tracking-tight">Undertakers</h1>
+            <p className="mt-4 max-w-2xl text-muted-foreground">
+              Organisations currently configured in Legacy Registry.
+            </p>
+          </div>
+          <Button asChild>
+            <Link href="/console/undertakers/new">New undertaker</Link>
+          </Button>
         </div>
 
         <div className="overflow-hidden rounded-[1.5rem] border bg-card shadow-sm">
