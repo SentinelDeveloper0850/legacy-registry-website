@@ -2,36 +2,7 @@ import Link from "next/link"
 import { ArrowLeft, CalendarDays, MapPin, Search } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-
-const records = [
-  {
-    id: "rec_nomsa_dlamini",
-    fullName: "Nomsa Dlamini",
-    dates: "1948 - 2021",
-    burialDate: "18 Jun 2021",
-    cemetery: "Mooifontein Cemetery",
-    location: "Block D · Row 4 · Grave 145",
-    status: "Coordinates captured",
-  },
-  {
-    id: "rec_joseph_mokoena",
-    fullName: "Joseph Mokoena",
-    dates: "1939 - 2017",
-    burialDate: "02 Sep 2017",
-    cemetery: "Mooifontein Cemetery",
-    location: "Block B · Row 11 · Grave 78",
-    status: "Block location only",
-  },
-  {
-    id: "rec_thandiwe_khumalo",
-    fullName: "Thandiwe Khumalo",
-    dates: "1956 - 2020",
-    burialDate: "Memorial record",
-    cemetery: "Kempton Park Cemetery",
-    location: "Memorial Wall · Panel 2 · Niche 19",
-    status: "Coordinates captured",
-  },
-]
+import { formatLocation, formatPublicDate, searchPublicRegistry } from "@/lib/public-registry"
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>
 
@@ -49,23 +20,14 @@ function getParam(params: Awaited<SearchParams>, key: string) {
   return value ?? ""
 }
 
-function normalise(value: string) {
-  return value.trim().toLowerCase()
-}
+export const dynamic = "force-dynamic"
 
 export default async function SearchPage({ searchParams }: PageProps) {
   const params = await searchParams
   const query = getParam(params, "q")
   const cemetery = getParam(params, "cemetery")
   const burialYear = getParam(params, "burialYear")
-
-  const filteredRecords = records.filter((record) => {
-    const matchesName = query ? normalise(record.fullName).includes(normalise(query)) : true
-    const matchesCemetery = cemetery ? normalise(record.cemetery).includes(normalise(cemetery)) : true
-    const matchesYear = burialYear ? normalise(record.burialDate).includes(normalise(burialYear)) : true
-
-    return matchesName && matchesCemetery && matchesYear
-  })
+  const records = await searchPublicRegistry({ query, cemetery, burialYear })
 
   return (
     <main className="min-h-svh bg-background text-foreground">
@@ -83,7 +45,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
               <p className="text-sm font-medium text-muted-foreground">Legacy Registry Search</p>
               <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">Search results</h1>
               <p className="mt-4 max-w-2xl text-muted-foreground">
-                Review matching cemetery records and open a result to confirm the recorded resting place.
+                Review matching published records and open a result to confirm the recorded resting place.
               </p>
             </div>
 
@@ -126,7 +88,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
           <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <div>
               <p className="text-sm font-medium text-muted-foreground">
-                {filteredRecords.length} {filteredRecords.length === 1 ? "record" : "records"} found
+                {records.length} {records.length === 1 ? "record" : "records"} found
               </p>
               <h2 className="mt-1 text-2xl font-semibold tracking-tight">Matching records</h2>
             </div>
@@ -135,9 +97,9 @@ export default async function SearchPage({ searchParams }: PageProps) {
             </Button>
           </div>
 
-          {filteredRecords.length > 0 ? (
+          {records.length > 0 ? (
             <div className="grid gap-4">
-              {filteredRecords.map((record) => (
+              {records.map((record: any) => (
                 <article key={record.id} className="rounded-[1.5rem] border bg-card p-5 shadow-sm">
                   <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-start">
                     <div>
@@ -146,16 +108,16 @@ export default async function SearchPage({ searchParams }: PageProps) {
                         <div className="flex gap-2">
                           <CalendarDays className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                           <div>
-                            <p className="font-medium text-foreground">{record.dates}</p>
-                            <p>Buried: {record.burialDate}</p>
+                            <p className="font-medium text-foreground">Released: {formatPublicDate(record.dateReleasedFromMortuary)}</p>
+                            <p>Published: {formatPublicDate(record.publishedAt)}</p>
                           </div>
                         </div>
                         <div className="flex gap-2 sm:col-span-2">
                           <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                           <div>
-                            <p className="font-medium text-foreground">{record.cemetery}</p>
-                            <p>{record.location}</p>
-                            <p>{record.status}</p>
+                            <p className="font-medium text-foreground">{record.cemetery?.name ?? "Cemetery pending"}</p>
+                            <p>{formatLocation(record)}</p>
+                            <p>Source: {record.undertaker?.tradingName ?? record.undertaker?.name ?? "Undertaker record"}</p>
                           </div>
                         </div>
                       </div>
@@ -171,7 +133,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
             <div className="rounded-[1.5rem] border bg-card p-8 text-center shadow-sm">
               <h3 className="text-xl font-semibold tracking-tight">No matching records yet</h3>
               <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-                Try fewer details. Fuzzy matching will come once the database-backed search is connected.
+                Try fewer details, or check again once more undertaker records have been prepared for the public registry.
               </p>
             </div>
           )}
