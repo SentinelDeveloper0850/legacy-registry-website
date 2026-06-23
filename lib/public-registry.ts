@@ -47,7 +47,7 @@ export async function searchPublicRegistry(filters: PublicRegistryFilters) {
 }
 
 export async function getPublicRegistryRecord(id: string) {
-  return (prisma as any)[modelName].findFirst({
+  const record = await (prisma as any)[modelName].findFirst({
     where: {
       id,
       publishToRegistry: true,
@@ -58,6 +58,15 @@ export async function getPublicRegistryRecord(id: string) {
       cemeteryBlock: true,
     },
   })
+
+  if (!record) {
+    return null
+  }
+
+  return {
+    ...record,
+    gravePhotoDataUrl: record.gravePhotoUrl,
+  }
 }
 
 export function formatPublicDate(value?: Date | string | null) {
@@ -78,4 +87,20 @@ export function formatLocation(record: any) {
   return [record.cemeteryBlock?.name, record.graveNumber ? `Grave ${record.graveNumber}` : null]
     .filter(Boolean)
     .join(" · ") || "Location details pending"
+}
+
+export function hasAcceptedGps(record: any) {
+  return Boolean(record.graveLatitude && record.graveLongitude && Number(record.gpsAccuracy) <= 5)
+}
+
+export function mapsLink(record: any) {
+  if (!hasAcceptedGps(record)) {
+    return null
+  }
+
+  return `https://www.google.com/maps?q=${record.graveLatitude},${record.graveLongitude}`
+}
+
+export function formatAccuracy(record: any) {
+  return record.gpsAccuracy ? `±${Number(record.gpsAccuracy).toFixed(2)}m` : "Not captured"
 }

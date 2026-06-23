@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
+import { uploadGravePhoto } from "@/lib/cloudinary"
 import { prisma } from "@/lib/prisma"
 import { getWorkspaceUser } from "@/lib/workspace-context"
 
@@ -18,7 +19,7 @@ function date(formData: FormData, key: string) {
 
 function decimal(formData: FormData, key: string) {
   const raw = text(formData, key)
-  return raw ? raw : null
+  return raw || null
 }
 
 function dateTime(formData: FormData, key: string) {
@@ -30,7 +31,7 @@ function slug(value: string) {
   return value.toLowerCase().replaceAll(" ", "-")
 }
 
-export async function saveWorkspaceEntry(formData: FormData) {
+export async function saveEntryWithAssets(formData: FormData) {
   const user = await getWorkspaceUser()
 
   if (!user) {
@@ -68,6 +69,7 @@ export async function saveWorkspaceEntry(formData: FormData) {
 
   const modelName = ["mortuary", "Register", "Entry"].join("")
   const publish = formData.get("publishToRegistry") === "on"
+  const photo = await uploadGravePhoto(text(formData, "gravePhotoDataUrl") || "")
 
   await (prisma as any)[modelName].create({
     data: {
@@ -90,7 +92,8 @@ export async function saveWorkspaceEntry(formData: FormData) {
       graveLongitude: decimal(formData, "graveLongitude"),
       gpsAccuracy: decimal(formData, "gpsAccuracy"),
       gpsCapturedAt: dateTime(formData, "gpsCapturedAt"),
-      gravePhotoDataUrl: text(formData, "gravePhotoDataUrl"),
+      gravePhotoUrl: photo?.url,
+      gravePhotoPublicId: photo?.publicId,
       gravePhotoCapturedAt: dateTime(formData, "gravePhotoCapturedAt"),
       publishToRegistry: publish,
       publishedAt: publish ? new Date() : null,
