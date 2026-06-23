@@ -16,6 +16,16 @@ function date(formData: FormData, key: string) {
   return raw ? new Date(`${raw}T08:00:00.000Z`) : null
 }
 
+function decimal(formData: FormData, key: string) {
+  const raw = text(formData, key)
+  return raw ? raw : null
+}
+
+function dateTime(formData: FormData, key: string) {
+  const raw = text(formData, key)
+  return raw ? new Date(raw) : null
+}
+
 function slug(value: string) {
   return value.toLowerCase().replaceAll(" ", "-")
 }
@@ -76,6 +86,10 @@ export async function saveWorkspaceEntry(formData: FormData) {
       cemeteryId: cemetery?.id,
       cemeteryBlockId: block?.id,
       graveNumber: text(formData, "graveNumber"),
+      graveLatitude: decimal(formData, "graveLatitude"),
+      graveLongitude: decimal(formData, "graveLongitude"),
+      gpsAccuracy: decimal(formData, "gpsAccuracy"),
+      gpsCapturedAt: dateTime(formData, "gpsCapturedAt"),
       publishToRegistry: publish,
       publishedAt: publish ? new Date() : null,
     },
