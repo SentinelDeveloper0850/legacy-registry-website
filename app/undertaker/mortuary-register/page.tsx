@@ -51,6 +51,10 @@ export default async function RegisterPage() {
                   <Detail label="Photo" value={entry.gravePhotoUrl ? "Captured" : "Not captured"} />
                 </div>
               </dl>
+
+              <Button variant="outline" className="mt-4 w-full" asChild>
+                <Link href={`/undertaker/mortuary-register/${entry.id}`}>Edit entry</Link>
+              </Button>
             </article>
           ))}
 
@@ -62,7 +66,7 @@ export default async function RegisterPage() {
         </div>
 
         <div className="hidden overflow-hidden rounded-[1.5rem] border bg-card shadow-sm md:block">
-          <div className="grid grid-cols-[0.8fr_1.2fr_1fr_1fr_0.8fr_0.7fr_0.7fr] gap-4 border-b bg-muted/40 px-5 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <div className="grid grid-cols-[0.8fr_1.2fr_1fr_1fr_0.8fr_0.7fr_0.7fr_0.6fr] gap-4 border-b bg-muted/40 px-5 py-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <span>Ref</span>
             <span>Name</span>
             <span>ID / Passport</span>
@@ -70,10 +74,11 @@ export default async function RegisterPage() {
             <span>Block</span>
             <span>Grave</span>
             <span>Status</span>
+            <span></span>
           </div>
 
           {entries.map((entry: any) => (
-            <div key={entry.id} className="grid grid-cols-[0.8fr_1.2fr_1fr_1fr_0.8fr_0.7fr_0.7fr] gap-4 border-b px-5 py-4 text-sm last:border-b-0">
+            <div key={entry.id} className="grid grid-cols-[0.8fr_1.2fr_1fr_1fr_0.8fr_0.7fr_0.7fr_0.6fr] gap-4 border-b px-5 py-4 text-sm last:border-b-0">
               <span className="font-medium">{entry.bodyNumber}</span>
               <span>{entry.fullName}</span>
               <span className="text-muted-foreground">{identifier(entry)}</span>
@@ -81,6 +86,9 @@ export default async function RegisterPage() {
               <span>{entry.cemeteryBlock?.name ?? "Not set"}</span>
               <span>{entry.graveNumber ?? "Not set"}</span>
               <span className="text-muted-foreground">{entry.publishToRegistry ? "Ready" : "Draft"}</span>
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/undertaker/mortuary-register/${entry.id}`}>Edit</Link>
+              </Button>
             </div>
           ))}
 
