@@ -79,3 +79,19 @@ export function formatLocation(record: any) {
     .filter(Boolean)
     .join(" · ") || "Location details pending"
 }
+
+export function hasAcceptedGps(record: any) {
+  return Boolean(record.graveLatitude && record.graveLongitude && Number(record.gpsAccuracy) <= 1)
+}
+
+export function mapsLink(record: any) {
+  if (!hasAcceptedGps(record)) {
+    return null
+  }
+
+  return `https://www.google.com/maps?q=${record.graveLatitude},${record.graveLongitude}`
+}
+
+export function formatAccuracy(record: any) {
+  return record.gpsAccuracy ? `±${Number(record.gpsAccuracy).toFixed(2)}m` : "Not captured"
+}
